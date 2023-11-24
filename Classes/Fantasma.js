@@ -25,20 +25,16 @@ class Fantasma {
       this.sprite.position.y = windowHeight+this.sprite.height/2
     }
   }
-  verificarColisaoParede(paredes, pacman){
+  verificarColisaoPp(paredes){
     for(let parede of paredes){
       if(this.sprite.collide(parede)){
         this.sprite.velocidade *= -1;
       }
     }
-    
     if(this.sprite.collide(pacman)){
-      pacman.destroy()
-      restartButton = createButton('Restart');
-      restartButton.position(width / 2 - 50, height / 2);
-      restartButton.style('background-color', 'blue');
-      restartButton.style('color', 'white');
+      pacman.destroy();
     }
+
   }
 
 }

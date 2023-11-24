@@ -10,7 +10,9 @@ let pacmanSound;
 let comida1, comida2, comida3, comida4,comida5,comida6,comida7,comida8,comida9,comida10
 let comidasPacman;
 let comidas = [];
-let restartButton;
+let score;
+let movimentoPermitido = false;
+let pacmanRemovido = false;
 
 function preload(){
     pacmanViradoDireita = loadAnimation("./assets/pacman/pacman1.png","./assets/pacman/pacman2.png","./assets/pacman/pacman1.png","./assets/pacman/pacman2.png")
@@ -42,6 +44,8 @@ function setup(){
     pacman.addAnimation("changingDown", pacmanViradoBaixo)
     pacman.addAnimation("changingLeft", pacmanViradoEsquerda)
     pacman.scale = 0.3
+    pacman.velocityX = 0;
+    pacman.velocityY = 0;
 
     instanciaFantasma1 = new Fantasma(windowWidth/2-400, 100, fantasma1, 10, 4)
 
@@ -55,10 +59,12 @@ function setup(){
 
     createParedes()
     createComidas()
+    score = 0
 }
 
 
 function draw(){
+
     background(0)
     movimentoPacman()
     movimentoFantasma()
@@ -67,48 +73,63 @@ function draw(){
         comida.exibir();
         if (!comida.removida && comida.verificarColisao(pacman)) {
             comida.removida = true;
+            score = score + 1
           }
       }
     //Filtro para manter apenas as comidas que não foram removidas.
     comidas = comidas.filter((comida) => !comida.removida);
 
     for(let fantasma of fantasmas){
-        if(!fantasma.removida && fantasma.verificarColisao(pacman)){
-           fantasma.removida = true 
+        if(!fantasma.removida){
+           fantasma.removida = true
+        }
+        if(fantasma.verificarColisao(pacman)){
+            fantasma.removida = true
+            pacmanRemovido = true
         }
     }
     fantasmas = fantasmas.filter((fantasma) => !fantasma.removida);
     drawSprites()
+    fill("yellow")
+    textSize(40)
+    text("Score: " + score, width/2 - 700, height/2 - 300)
+    // fill("yellow")
+    // textSize(40)
+    // text("Score: "+ score, width/2 - 700, height/2 - 300)
     
 }
-function movimentoPacman(){
-    if(keyIsDown(LEFT_ARROW)){
-        pacman.position.x -=5
-        pacman.changeAnimation("changingLeft")
-    }
-    if (pacman.position.x < 0) {
-        pacman.position.x = width;
-    }
-    if(keyIsDown(RIGHT_ARROW)){
-        pacman.position.x +=5
-        pacman.changeAnimation("running")
-    }
-    if (pacman.position.x > width) {
-        pacman.position.x = 0;
-    }
-    if(keyIsDown(UP_ARROW)){
-        pacman.position.y -=5
-        pacman.changeAnimation("changingUp")
-    }
-    if (pacman.position.y < 0) {
-        pacman.position.y = height;
-    }
-    if(keyIsDown(DOWN_ARROW)){
-        pacman.position.y +=5
-        pacman.changeAnimation("changingDown")
-    }
-    if (pacman.position.y > height) {
-        pacman.position.y = 0;
+function movimentoPacman() {
+    if (!pacmanRemovido) {
+        if (keyIsDown(LEFT_ARROW) && movimentoPermitido) {
+            pacman.position.x -= 5;
+            pacman.changeAnimation("changingLeft");
+        }
+        if (pacman.position.x < 0) {
+            pacman.position.x = width;
+        }
+
+        if (keyIsDown(RIGHT_ARROW) && movimentoPermitido) {
+            pacman.position.x += 5;
+            pacman.changeAnimation("running");
+        }
+        if (pacman.position.x > width) {
+            pacman.position.x = 0;
+        }
+        if (keyIsDown(UP_ARROW) && movimentoPermitido) {
+            pacman.position.y -= 5;
+            pacman.changeAnimation("changingUp");
+        }
+        if (pacman.position.y < 0) {
+            pacman.position.y = height;
+        }
+        if (keyIsDown(DOWN_ARROW) && movimentoPermitido) {
+            pacman.position.y += 5;
+            pacman.changeAnimation("changingDown");
+        }
+        if (pacman.position.y > height) {
+            pacman.position.y = 0;
+        }
+
     }
 }
 
@@ -119,7 +140,7 @@ function movimentoFantasma(){
         const fantasma = fantasmas[i];
         fantasma.exibir()
         fantasma.mover()
-        fantasma.verificarColisaoParede(paredes, pacman)
+        fantasma.verificarColisaoPp(paredes, pacman)
     }
 }
 function createParedes(){
