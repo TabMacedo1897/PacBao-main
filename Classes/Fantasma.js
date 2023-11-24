@@ -4,6 +4,7 @@ class Fantasma {
     this.sprite.addImage(imagem)
     this.sprite.scale = tamanho / 100
     this.sprite.velocidade = velocidade
+    this.removida = false
   }
   exibir(){
     drawSprite(this.sprite)
@@ -24,12 +25,19 @@ class Fantasma {
       this.sprite.position.y = windowHeight+this.sprite.height/2
     }
   }
-  verificarColisaoComParede(paredes) {
-    for (let parede of paredes) {
-      if (this.sprite.collide(parede)) {
-        // Inverte a direção do fantasma quando colide com uma parede
+  verificarColisaoParede(paredes, pacman){
+    for(let parede of paredes){
+      if(this.sprite.collide(parede)){
         this.sprite.velocidade *= -1;
       }
+    }
+    
+    if(this.sprite.collide(pacman)){
+      pacman.destroy()
+      restartButton = createButton('Restart');
+      restartButton.position(width / 2 - 50, height / 2);
+      restartButton.style('background-color', 'blue');
+      restartButton.style('color', 'white');
     }
   }
 

@@ -12,13 +12,13 @@ class ComidaPacman{
         }
     }
     verificarColisao(pacman){
-        if(!this.removida){
-            const d = dist(this.x, this.y,pacman.position.x,pacman.position.y)
-            if(d <this.tamanho/2 + pacman.width/2){
-             this.removida = true
-             return true
-            }
+       if(!this.removida){
+        const d = dist(this.x, this.y, pacman.position.x, pacman.position.y)
+        if(d < this.tamanho/ 2 + pacman.width/2){
+            this.removida = true
+            return true
         }
         return false
+       } 
     }
 }

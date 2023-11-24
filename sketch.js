@@ -10,6 +10,7 @@ let pacmanSound;
 let comida1, comida2, comida3, comida4,comida5,comida6,comida7,comida8,comida9,comida10
 let comidasPacman;
 let comidas = [];
+let restartButton;
 
 function preload(){
     pacmanViradoDireita = loadAnimation("./assets/pacman/pacman1.png","./assets/pacman/pacman2.png","./assets/pacman/pacman1.png","./assets/pacman/pacman2.png")
@@ -68,9 +69,15 @@ function draw(){
             comida.removida = true;
           }
       }
-
+    //Filtro para manter apenas as comidas que não foram removidas.
     comidas = comidas.filter((comida) => !comida.removida);
 
+    for(let fantasma of fantasmas){
+        if(!fantasma.removida && fantasma.verificarColisao(pacman)){
+           fantasma.removida = true 
+        }
+    }
+    fantasmas = fantasmas.filter((fantasma) => !fantasma.removida);
     drawSprites()
     
 }
@@ -79,17 +86,29 @@ function movimentoPacman(){
         pacman.position.x -=5
         pacman.changeAnimation("changingLeft")
     }
+    if (pacman.position.x < 0) {
+        pacman.position.x = width;
+    }
     if(keyIsDown(RIGHT_ARROW)){
         pacman.position.x +=5
         pacman.changeAnimation("running")
+    }
+    if (pacman.position.x > width) {
+        pacman.position.x = 0;
     }
     if(keyIsDown(UP_ARROW)){
         pacman.position.y -=5
         pacman.changeAnimation("changingUp")
     }
+    if (pacman.position.y < 0) {
+        pacman.position.y = height;
+    }
     if(keyIsDown(DOWN_ARROW)){
         pacman.position.y +=5
         pacman.changeAnimation("changingDown")
+    }
+    if (pacman.position.y > height) {
+        pacman.position.y = 0;
     }
 }
 
@@ -100,7 +119,7 @@ function movimentoFantasma(){
         const fantasma = fantasmas[i];
         fantasma.exibir()
         fantasma.mover()
-        fantasma.verificarColisaoComParede(paredes)
+        fantasma.verificarColisaoParede(paredes, pacman)
     }
 }
 function createParedes(){
